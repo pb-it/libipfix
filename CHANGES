@@ -1,5 +1,9 @@
 ChangeLog for libipfix
 
+Version 1.01 (2013-09-28)
+
++ new Ericsson IPOS/SEOS IE definitions for CGNAT logging
+
 Version 1.0
 
 + update of IE definitions
