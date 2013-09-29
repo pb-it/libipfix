@@ -1,0 +1,14 @@
+# format of lines in this file:
+# IE number, constant_name, length in bytes, coding type, table column name, description
+#
+# Ericsson IPOS/SEOS CGNAT IEs 
+#
+
+24628, IPFIX_FT_NAT_LOG_FIELD_IDX_CONTEXT_ID,		4,  IPFIX_CODING_UINT, "NatLogIdxCtxID",  "Internal context ID" 	
+24629, IPFIX_FT_NAT_LOG_FIELD_IDX_CONTENT_NAME,		64, IPFIX_CODING_STRING, "NatLogIdxContentName",  "Zeto terminated context Name" 
+24630, IPFIX_FT_NAT_LOG_FIELD_IDX_ASSIGN_TS_SEC,	4,  IPFIX_CODING_UINT, "NatLogIdxAssignTSSec",  "Seconds of UNIX timestamp for assign"  
+24631, IPFIX_FT_NAT_LOG_FIELD_IDX_UNASSIGN_TS_SEC,	4,  IPFIX_CODING_UINT, "NatLogIdxUnassignTSSec",  "Seconds of UNIX timestamp for unassign"
+24632, IPFIX_FT_NAT_LOG_FIELD_IDX_IPV4_INT_ADDR,	4,  IPFIX_CODING_IPADDR, "NatLogIdxIPV4IntAddr",  "Internal IPv4 address"    
+24633, IPFIX_FT_NAT_LOG_FIELD_IDX_IPV4_EXT_ADDR,	4,  IPFIX_CODING_IPADDR, "NatLogIdxIPV4ExtAddr",  "External IPv4 address"   
+24634, IPFIX_FT_NAT_LOG_FIELD_IDX_EXT_PORT_FIRST,	2,  IPFIX_CODING_UINT, "NatLogIdxExtPortFirst",  "External L4 port start"   
+24635, IPFIX_FT_NAT_LOG_FIELD_IDX_EXT_PORT_LAST,	2,  IPFIX_CODING_UINT, "NatLogIdxExtPortLast",  "External L4 port end"    
