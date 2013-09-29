@@ -3,7 +3,7 @@
 BEGIN {
 	FS = ","
 	i=0
-	print "/*\n * ERICSSON IPFIX defines\n *\n * This is a generated file. Do not edit! \n *\n */\n#ifndef IPFIX_ERICSSON_DEF_H\n#define IPFIX_ERICSSON_DEF_H\n\n#define IPFIX_ENO_ERICSSON\t0\n\n"
+	print "/*\n * ERICSSON IPFIX defines\n *\n * This is a generated file. Do not edit! \n *\n * The real ERICSSON ENO is 2352. However, there is no ENO in NFV9 packet data format, hence using 0 \n *\n */\n#ifndef IPFIX_ERICSSON_DEF_H\n#define IPFIX_ERICSSON_DEF_H\n\n#define IPFIX_ENO_ERICSSON\t0\n\n"
 }
 
 
