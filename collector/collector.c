@@ -62,6 +62,7 @@ typedef struct ipfix_collector_opts
     char           *logfile;
 
     char           *datadir;
+    char           *datafile;
     int            dbexport;     /* flag        */
     char           *dbuser;      /* db username */
     char           *dbpw;        /* db password */
@@ -104,6 +105,7 @@ static void usage( char *taskname)
         "  -4                  accept connections via AF_INET socket\n"
         "  -6                  accept connections via AF_INET6 socket\n"
         "  -o <datadir>        store files of collected data in this dir\n"
+        "  -f <datafile>       store collected data in this specific file. MUST BE USED WITH -o\n"
         "  -p <portno>         listen on this port (default=4739)\n"
         "  -s                  support SCTP clients\n"
         "  -t                  support TCP clients\n"
@@ -165,7 +167,7 @@ void exit_func ( int retval )
         ipfix_col_close_ssl( scol );
     }
 
-    if ( par.datadir ) ipfix_col_stop_fileexport();
+    if ( par.datadir || par.datafile) ipfix_col_stop_fileexport();
 #ifdef DBSUPPORT
     if ( par.dbexport ) ipfix_col_stop_mysqlexport();
 #endif
@@ -198,8 +200,8 @@ int do_collect()
 
     /** activate file export
      */
-    if ( par.datadir )
-        (void) ipfix_col_init_fileexport( par.datadir );
+    if ( par.datadir || par.datafile)
+        (void) ipfix_col_init_fileexport( par.datadir, par.datafile);
 
 #ifdef DBSUPPORT
     if ( par.dbexport ) {
@@ -286,7 +288,7 @@ int main (int argc, char *argv[])
 {
     char          arg;          /* short options: character */
     int           loptidx=0;    /* long options: arg==0 and index */
-    char          opt[] = "64stuhl:p:vo:";
+    char          opt[] = "64stuhl:p:vo:f:";
 #ifdef HAVE_GETOPT_LONG
     struct option lopt[] = { 
         { "dbhost", 1, 0, 0},
@@ -319,6 +321,7 @@ int main (int argc, char *argv[])
     par.logfile = NULL;
     par.maxcon  = 10;
     par.datadir  = NULL;
+    par.datafile = NULL;
     par.dbexport = 0;
     par.dbhost   = DFLT_MYSQL_HOST;
     par.dbname   = DFLT_MYSQL_DBNAME;
@@ -335,7 +338,7 @@ int main (int argc, char *argv[])
     while( (arg=getopt( argc, argv, opt )) != EOF )
 #endif
     {
-        switch (arg) 
+	switch (arg) 
         {
           case 0: 
               switch (loptidx) {
@@ -413,6 +416,10 @@ int main (int argc, char *argv[])
                   exit(1);
               }
               break;
+
+          case 'f':
+            par.datafile = optarg;
+            break;
 
           case 'p':
               if ((par.port=atoi(optarg)) <0)

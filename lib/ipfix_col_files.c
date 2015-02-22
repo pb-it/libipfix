@@ -34,6 +34,7 @@ $$LIC$$
 typedef struct ipfix_export_data_file
 {
     char *datadir;
+    char *datafname;
     
 } ipfixe_data_file_t;
 
@@ -51,6 +52,7 @@ static int export_newsource_file( ipfixs_node_t *s, void *arg )
 {
     char  *func = "newsource_file";
     char  *datadir = ((ipfixe_data_file_t*)arg)->datadir;
+    char  *datafname = ((ipfixe_data_file_t*)arg)->datafname;
 
     if ( datadir ) {
         char   tmpbuf[30], fname[PATH_MAX], suffix[30];
@@ -59,34 +61,38 @@ static int export_newsource_file( ipfixs_node_t *s, void *arg )
 
         /** create directory and open output file
          */
-        snprintf( s->fname, PATH_MAX, "%s/%s", datadir,
-                  ipfix_col_input_get_ident( s->input ) );
-        if ( (access( s->fname, R_OK ) <0 )
-             && (mkdir( s->fname, S_IRWXU ) <0) ) {
-            mlogf( 0, "[%s] cannot access dir '%s': %s\n",
-                   func, s->fname, strerror(errno) );
-            return -1;
-        }
-        snprintf( s->fname+strlen(s->fname), PATH_MAX-strlen(s->fname),
-                  "/%u", (unsigned int)s->odid );
-        if ( (access( s->fname, R_OK ) <0 )
-             && (mkdir( s->fname, S_IRWXU ) <0) ) {
-            mlogf( 0, "[%s] cannot access dir '%s': %s\n",
-                   func, s->fname, strerror(errno) );
-            return -1;
-        }
-
-        /** get filename (YYMMDD-x), check if there is already a file
-         */
-        for (i=1, *suffix=0; i; i++) {
-            strftime( tmpbuf, 30, "%Y%m%d", localtime( &t ));
-            snprintf( fname, sizeof(fname), "%s/%s%s", 
-                      s->fname, tmpbuf, suffix );
-            if ( access( fname, R_OK ) <0 ) {
-                snprintf( s->fname, PATH_MAX, "%s", fname );
-                break;
+        if (!datafname){
+            snprintf( s->fname, PATH_MAX, "%s/%s", datadir,
+                      ipfix_col_input_get_ident( s->input ) );
+            if ( (access( s->fname, R_OK ) <0 )
+                 && (mkdir( s->fname, S_IRWXU ) <0) ) {
+                mlogf( 0, "[%s] cannot access dir '%s': %s\n",
+                       func, s->fname, strerror(errno) );
+                return -1;
             }
-            sprintf( suffix, "-%d", i );
+            snprintf( s->fname+strlen(s->fname), PATH_MAX-strlen(s->fname),
+                      "/%u", (unsigned int)s->odid );
+            if ( (access( s->fname, R_OK ) <0 )
+                 && (mkdir( s->fname, S_IRWXU ) <0) ) {
+                mlogf( 0, "[%s] cannot access dir '%s': %s\n",
+                       func, s->fname, strerror(errno) );
+                return -1;
+            }
+
+            /** get filename (YYMMDD-x), check if there is already a file
+             */
+            for (i=1, *suffix=0; i; i++) {
+                strftime( tmpbuf, 30, "%Y%m%d", localtime( &t ));
+                snprintf( fname, sizeof(fname), "%s/%s%s",
+                          s->fname, tmpbuf, suffix );
+                if ( access( fname, R_OK ) <0 ) {
+                    snprintf( s->fname, PATH_MAX, "%s", fname );
+                    break;
+                }
+                sprintf( suffix, "-%d", i );
+            }
+        } else {
+            snprintf(s->fname, PATH_MAX, "%s/%s", datadir, datafname);
         }
 
         if ( (s->fp=fopen( s->fname, "a" )) ==NULL ) {
@@ -182,7 +188,7 @@ static void export_cleanup_file( void *arg )
 
 /*----- export funcs -----------------------------------------------------*/
 
-int ipfix_col_init_fileexport( char *datadir ) 
+int ipfix_col_init_fileexport( char *datadir , char *datafile)
 {
     ipfixe_data_file_t *data =NULL;
 
@@ -204,6 +210,7 @@ int ipfix_col_init_fileexport( char *datadir )
     g_colinfo->export_drecord   = export_drecord_file;
     g_colinfo->export_cleanup   = export_cleanup_file;
     data->datadir = datadir;
+    data->datafname = datafile;
     g_colinfo->data = (void*)data;
 
     return ipfix_col_register_export( g_colinfo );

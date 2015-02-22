@@ -107,7 +107,7 @@ typedef struct ipfix_col_info_node
 typedef void* ipfix_col_t;
 
 void ipfix_col_init( void );
-int  ipfix_col_init_fileexport( char *datadir );
+int  ipfix_col_init_fileexport( char *datadir, char *datafile );
 void ipfix_col_stop_fileexport( void );
 int  ipfix_col_init_mysqlexport( char *host, char *user, char *pw, char *name );
 void ipfix_col_stop_mysqlexport( void );

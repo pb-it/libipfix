@@ -36,7 +36,7 @@ $$LIC$$
 
 static char       progname[30];
 static int        verbose_level = 0;
-static int        *tcp_s=NULL, ntcp_s=0;       /* socket */
+static int        *udp_s=NULL, nudp_s=0;       /* socket */
 
 /*------ static funcs ----------------------------------------------------*/
 
@@ -61,11 +61,11 @@ void exit_func ( int signo )
     if ( verbose_level && signo )
         fprintf( stderr, "\n[%s] got signo %d, bye.\n\n", progname, signo );
 
-    if ( tcp_s ) {
+    if ( udp_s ) {
         int i;
 
-        for( i=0; i<ntcp_s; i++ )
-            close( tcp_s[i] );
+        for( i=0; i<nudp_s; i++ )
+            close( udp_s[i] );
     }
 
     ipfix_col_cleanup();
@@ -144,13 +144,13 @@ int main (int argc, char *argv[])
 
     /** activate file export
      */
-    (void) ipfix_col_init_fileexport( datadir );
+    (void) ipfix_col_init_fileexport( datadir, NULL);
 
     /** open ipfix collector port(s)
      */
-    if ( ipfix_col_listen( &ntcp_s, &tcp_s, IPFIX_PROTO_TCP, 
+    if ( ipfix_col_listen( &nudp_s, &udp_s, IPFIX_PROTO_UDP, 
                            port, AF_INET, 10 ) <0 ) {
-        fprintf( stderr, "[%s] ipfix_listen(tcp) failed.\n",
+        fprintf( stderr, "[%s] ipfix_listen(udp) failed.\n",
                  progname );
         return -1;
     }
